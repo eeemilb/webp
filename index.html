@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>EDM Resources Hub</title>
+    <title>EDM Resources</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -565,7 +565,19 @@
             display: none !important;
         }
 
-        /* Circuit pattern background */
+        /* Animated background */
+        @keyframes floatParticles {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(10px, -10px) scale(1.1); opacity: 0.5; }
+            50% { transform: translate(-5px, -20px) scale(0.9); opacity: 0.4; }
+            75% { transform: translate(-15px, -10px) scale(1.05); opacity: 0.35; }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
         body::before {
             content: '';
             position: fixed;
@@ -573,9 +585,27 @@
             left: 0;
             right: 0;
             bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(29, 185, 84, 0.05) 0%, transparent 50%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-image: 
-                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 212, 255, 0.03) 49px, rgba(0, 212, 255, 0.03) 50px),
-                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 212, 255, 0.03) 49px, rgba(0, 212, 255, 0.03) 50px);
+                radial-gradient(circle, rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                radial-gradient(circle, rgba(29, 185, 84, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px, 80px 80px;
+            background-position: 0 0, 40px 40px;
+            animation: floatParticles 4s ease-in-out infinite;
             pointer-events: none;
             z-index: 0;
         }
@@ -603,9 +633,184 @@
             background: #00b8e6;
         }
 
+        /* Admin Badge */
+        .admin-badge {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            color: var(--primary-bg);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Chat Section */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 320px);
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 12px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--secondary-bg);
+            border: 2px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .chat-username {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .chat-timestamp {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .chat-text {
+            background: var(--secondary-bg);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+            word-wrap: break-word;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 11px;
+            margin-left: auto;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .chat-delete-btn:hover {
+            opacity: 1;
+            color: var(--accent-orange);
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: var(--primary-bg);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .chat-send-btn:hover {
+            background: #00b8e6;
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.5);
+        }
+
+        .chat-send-btn:active {
+            transform: scale(0.95);
+        }
+
         /* Padding for bottom nav */
         body {
             padding-bottom: 80px;
+        }
+
+        /* Export button */
+        .btn-export {
+            background: var(--accent-green);
+            color: var(--primary-bg);
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+        }
+
+        .btn-export:hover {
+            background: #19a045;
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.5);
         }
     </style>
 </head>
@@ -629,45 +834,61 @@
     <div class="container">
         <!-- Welcome Section -->
         <div class="welcome-section">
-            <h1 class="welcome-title">EDM Resources Hub</h1>
-            <p class="welcome-subtitle">Профессиональная база ресурсов по электроэрозии и станкостроению</p>
+            <h1 class="welcome-title">EDM Resources</h1>
+            <p class="welcome-subtitle">Электроэрозионная обработка - ресурсы и чат</p>
         </div>
 
-        <!-- Action Bar -->
-        <div class="action-bar">
+        <!-- Action Bar (Admin Only) -->
+        <div class="action-bar" id="actionBar" style="display: none;">
             <button class="btn btn-primary" id="addLinkBtn">
                 <span>➕</span>
-                <span>Добавить ссылку</span>
+                <span>Добавить</span>
             </button>
             <button class="btn btn-secondary" id="manageBtn">
-                <span>⚙️</span>
-                <span id="manageBtnText">Управление</span>
+                <span>✏️</span>
+                <span id="manageBtnText">Редактировать</span>
+            </button>
+            <button class="btn btn-export" id="exportBtn">
+                <span>📥</span>
+                <span>Экспорт</span>
             </button>
         </div>
 
         <!-- Categories Navigation -->
         <div class="categories-nav" id="categoriesNav"></div>
 
-        <!-- Links Section -->
-        <div class="links-section">
-            <div class="section-header" id="sectionHeader"></div>
-            <div class="links-grid" id="linksGrid"></div>
+        <!-- Content Section -->
+        <div id="contentSection">
+            <!-- Links Section -->
+            <div class="links-section" id="linksSection">
+                <div class="section-header" id="sectionHeader"></div>
+                <div class="links-grid" id="linksGrid"></div>
+            </div>
+            
+            <!-- Chat Section -->
+            <div class="chat-container" id="chatSection" style="display: none;">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Введите сообщение..." />
+                    <button class="chat-send-btn" id="chatSendBtn">📤</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <button class="nav-btn active" id="homeBtn">
-            <span class="nav-icon">🏠</span>
-            <span>Главная</span>
+        <button class="nav-btn" id="helpBtn">
+            <span class="nav-icon">❓</span>
+            <span>Помощь</span>
         </button>
-        <button class="nav-btn" id="menuBtn">
-            <span class="nav-icon">📋</span>
-            <span>Меню</span>
+        <button class="nav-btn" id="settingsBtn" style="display: none;">
+            <span class="nav-icon">⚙️</span>
+            <span>Настройки</span>
         </button>
-        <button class="nav-btn" id="searchBtn">
-            <span class="nav-icon">🔍</span>
-            <span>Поиск</span>
+        <button class="nav-btn" id="backBtn">
+            <span class="nav-icon">◀️</span>
+            <span>Назад</span>
         </button>
     </nav>
 

@@ -3,274 +3,221 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
-// Data structure
-const appData = {
+// Admin configuration
+const ADMIN_USERNAME = 'eee_h1';
+
+// Current user state
+let currentUser = {
+    username: '',
+    firstName: '',
+    photoUrl: '',
+    isAdmin: false
+};
+
+// Default data structure
+const defaultData = {
     categories: [
         {
-            id: 'tutorials',
-            name: 'Tutorials & Guides',
-            emoji: '📚',
-            description: 'Learning materials and guides'
+            id: 'boards',
+            name: '🔌 Платы',
+            emoji: '🔌',
+            type: 'links',
+            description: 'Ссылки на платы и PCB ресурсы'
         },
         {
-            id: 'tools',
-            name: 'Tools & Resources',
-            emoji: '🛠️',
-            description: 'Software and design tools'
+            id: 'schemas',
+            name: '📊 Схемы',
+            emoji: '📊',
+            type: 'links',
+            description: 'Ссылки на электрические схемы'
         },
         {
-            id: 'communities',
-            name: 'Communities',
-            emoji: '👥',
-            description: 'Forums and communities'
-        },
-        {
-            id: 'documentation',
-            name: 'Documentation',
-            emoji: '📖',
-            description: 'Technical documentation'
-        },
-        {
-            id: 'projects',
-            name: 'My Projects',
-            emoji: '🚀',
-            description: 'Personal projects'
-        },
-        {
-            id: 'suppliers',
-            name: 'Suppliers',
-            emoji: '🏪',
-            description: 'Component suppliers'
+            id: 'communication',
+            name: '💬 Коммуникация',
+            emoji: '💬',
+            type: 'chat',
+            description: 'Общий чат для обсуждения'
         }
     ],
     links: [
-        // Tutorials
         {
             id: 1,
-            title: 'EDM Basics Explained',
-            url: 'https://example.com/edm-guide',
-            description: 'Complete guide to electro-erosion machining',
-            emoji: '⚡',
-            category: 'tutorials'
+            title: 'STM32H7 Discovery Kit',
+            url: 'https://www.st.com/en/evaluation-tools/h735i-dk.html',
+            description: 'Отладочная плата с мощным микроконтроллером',
+            emoji: '⚙️',
+            category: 'boards'
         },
         {
             id: 2,
-            title: 'High-Frequency Pulse Generation',
-            url: 'https://example.com/hfpg',
-            description: 'Understanding pulse waveforms for EDM',
-            emoji: '📊',
-            category: 'tutorials'
+            title: 'Arduino Mega 2560',
+            url: 'https://www.arduino.cc/',
+            description: 'Популярная платформа для прототипирования',
+            emoji: '🎛️',
+            category: 'boards'
         },
         {
             id: 3,
-            title: 'STM32 Programming for EDM',
-            url: 'https://example.com/stm32-edm',
-            description: 'Microcontroller programming guide',
-            emoji: '💻',
-            category: 'tutorials'
+            title: 'Raspberry Pi 4',
+            url: 'https://www.raspberrypi.org/',
+            description: 'Мини-компьютер для сложных проектов',
+            emoji: '🖥️',
+            category: 'boards'
         },
-        // Tools
         {
             id: 4,
-            title: 'EasyEDA - PCB Design',
-            url: 'https://easyeda.com',
-            description: 'PCB design and simulation platform',
-            emoji: '📐',
-            category: 'tools'
+            title: 'Блок питания EDM',
+            url: 'https://example.com/edm-psu',
+            description: 'Высоковольтный источник питания для электроэрозии',
+            emoji: '⚡',
+            category: 'schemas'
         },
         {
             id: 5,
-            title: 'Fusion 360 CAD',
-            url: 'https://fusion360.autodesk.com',
-            description: 'Professional 3D CAD software',
-            emoji: '🎨',
-            category: 'tools'
+            title: 'Высокочастотный генератор',
+            url: 'https://example.com/hfo',
+            description: 'Генератор импульсов 100-200 кГц',
+            emoji: '📡',
+            category: 'schemas'
         },
         {
             id: 6,
-            title: 'STM32CubeMX',
-            url: 'https://www.st.com/en/development-tools/stm32cubemx.html',
-            description: 'STM32 microcontroller configuration tool',
-            emoji: '⚙️',
-            category: 'tools'
-        },
-        // Communities
+            title: 'Схема генератора импульсов',
+            url: 'https://example.com/pulse',
+            description: 'Полная схема с описанием компонентов',
+            emoji: '📋',
+            category: 'schemas'
+        }
+    ],
+    messages: [
         {
-            id: 7,
-            title: 'Russian Electronics Forum',
-            url: 'https://radiokot.ru',
-            description: 'Electronics engineering community',
-            emoji: '🌐',
-            category: 'communities'
-        },
-        {
-            id: 8,
-            title: 'Telegram EDM Builders Group',
-            url: 'https://t.me',
-            description: 'Community of EDM machine builders',
-            emoji: '🔗',
-            category: 'communities'
-        },
-        {
-            id: 9,
-            title: 'GitHub Open EDM Projects',
-            url: 'https://github.com/topics/edm',
-            description: 'Open source EDM projects',
-            emoji: '📦',
-            category: 'communities'
-        },
-        // Documentation
-        {
-            id: 10,
-            title: 'STM32 Datasheets',
-            url: 'https://www.st.com/resource/en/datasheet',
-            description: 'Complete microcontroller specifications',
-            emoji: '📄',
-            category: 'documentation'
-        },
-        {
-            id: 11,
-            title: 'High-Frequency Power Electronics',
-            url: 'https://example.com/hf-power',
-            description: 'Advanced power electronics theory',
-            emoji: '⚡',
-            category: 'documentation'
-        },
-        {
-            id: 12,
-            title: 'PCB Design Best Practices',
-            url: 'https://example.com/pcb-practices',
-            description: 'Professional PCB design guidelines',
-            emoji: '✓',
-            category: 'documentation'
-        },
-        // Projects
-        {
-            id: 13,
-            title: 'EDM Machine Prototype',
-            url: 'https://example.com/edm-project',
-            description: 'Main EDM machine development',
-            emoji: '🤖',
-            category: 'projects'
-        },
-        {
-            id: 14,
-            title: 'Custom Pulse Generator',
-            url: 'https://example.com/pulse-gen',
-            description: 'High-frequency pulse generation circuit',
-            emoji: '〰️',
-            category: 'projects'
-        },
-        {
-            id: 15,
-            title: 'Control Board Design',
-            url: 'https://example.com/control-board',
-            description: 'Main control and measurement board',
-            emoji: '🎛️',
-            category: 'projects'
-        },
-        // Suppliers
-        {
-            id: 16,
-            title: 'ChipDip - Electronic Components',
-            url: 'https://www.chipdip.ru',
-            description: 'Russian electronics component supplier',
-            emoji: '🛒',
-            category: 'suppliers'
-        },
-        {
-            id: 17,
-            title: 'Industrial Equipment',
-            url: 'https://example.com/equipment',
-            description: 'Industrial machinery and components',
-            emoji: '🏭',
-            category: 'suppliers'
-        },
-        {
-            id: 18,
-            title: 'PCB Manufacturing Services',
-            url: 'https://example.com/pcb-mfg',
-            description: 'Professional PCB fabrication',
-            emoji: '🔧',
-            category: 'suppliers'
+            id: 1,
+            username: 'eee_h1',
+            displayName: 'Emil',
+            avatarUrl: '',
+            message: 'Добро пожаловать в канал! Здесь мы обсуждаем проекты EDM и электроэрозионную обработку',
+            timestamp: Date.now(),
+            isAdmin: true
         }
     ]
 };
 
+// App data (loaded from localStorage or default)
+let appData = JSON.parse(JSON.stringify(defaultData));
+
 // State management
 let state = {
-    currentCategory: 'tutorials',
+    currentCategory: 'boards',
     editMode: false,
-    editingLinkId: null,
-    searchQuery: ''
+    editingLinkId: null
 };
+
+// Save data to memory (in production, this would sync to Google Sheets)
+function saveData() {
+    console.log('Data saved to memory (ready for Google Sheets integration)');
+}
 
 // Initialize Telegram user profile
 function initTelegramUser() {
     const user = tg.initDataUnsafe.user;
     
     if (user) {
+        currentUser.username = user.username || '';
+        currentUser.firstName = user.first_name || 'Пользователь';
+        currentUser.photoUrl = user.photo_url || '';
+        currentUser.isAdmin = currentUser.username === ADMIN_USERNAME;
+        
         const userName = document.getElementById('userName');
         const userUsername = document.getElementById('userUsername');
         const userAvatar = document.getElementById('userAvatar');
+        const userInfo = document.querySelector('.user-info');
         
-        userName.textContent = user.first_name || 'User';
-        userUsername.textContent = user.username ? `@${user.username}` : '';
+        userName.textContent = currentUser.firstName;
+        userUsername.textContent = currentUser.username ? '@' + currentUser.username : '';
         
-        if (user.photo_url) {
-            userAvatar.innerHTML = `<img src="${user.photo_url}" alt="${user.first_name}">`;
+        if (currentUser.photoUrl) {
+            userAvatar.innerHTML = '<img src="' + currentUser.photoUrl + '" alt="' + currentUser.firstName + '">';
         } else {
-            userAvatar.textContent = user.first_name ? user.first_name.charAt(0).toUpperCase() : '👤';
+            userAvatar.textContent = currentUser.firstName.charAt(0).toUpperCase();
         }
+        
+        if (currentUser.isAdmin) {
+            const badge = document.createElement('div');
+            badge.className = 'admin-badge';
+            badge.textContent = 'Администратор';
+            userInfo.appendChild(badge);
+            
+            document.getElementById('actionBar').style.display = 'flex';
+            document.getElementById('settingsBtn').style.display = 'flex';
+        }
+    } else {
+        currentUser.firstName = 'Тестовый пользователь';
+        currentUser.username = '';
+        document.getElementById('userName').textContent = currentUser.firstName;
     }
 }
 
 // Render categories navigation
 function renderCategories() {
     const categoriesNav = document.getElementById('categoriesNav');
-    categoriesNav.innerHTML = appData.categories.map(cat => `
-        <button class="category-btn ${state.currentCategory === cat.id ? 'active' : ''}" 
-                data-category="${cat.id}">
-            <span>${cat.emoji}</span>
-            <span>${cat.name}</span>
-        </button>
-    `).join('');
+    categoriesNav.innerHTML = appData.categories.map(function(cat) {
+        const activeClass = state.currentCategory === cat.id ? 'active' : '';
+        return '<button class="category-btn ' + activeClass + '" data-category="' + cat.id + '"><span>' + cat.emoji + '</span><span>' + cat.name + '</span></button>';
+    }).join('');
     
-    // Add event listeners
-    categoriesNav.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+    categoriesNav.querySelectorAll('.category-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
             state.currentCategory = btn.dataset.category;
-            renderApp();
+            state.editMode = false;
+            renderContent();
         });
     });
+}
+
+// Render content based on category type
+function renderContent() {
+    const category = appData.categories.find(function(cat) { return cat.id === state.currentCategory; });
+    const linksSection = document.getElementById('linksSection');
+    const chatSection = document.getElementById('chatSection');
+    const addBtn = document.getElementById('addLinkBtn');
+    const manageBtn = document.getElementById('manageBtn');
+    
+    if (category.type === 'chat') {
+        linksSection.style.display = 'none';
+        chatSection.style.display = 'flex';
+        if (currentUser.isAdmin) {
+            addBtn.style.display = 'none';
+            manageBtn.innerHTML = '<span>🗑️</span><span>Очистить чат</span>';
+        }
+        renderChat();
+    } else {
+        linksSection.style.display = 'block';
+        chatSection.style.display = 'none';
+        if (currentUser.isAdmin) {
+            addBtn.style.display = 'flex';
+            const btnText = state.editMode ? 'Готово' : 'Редактировать';
+            manageBtn.innerHTML = '<span>✏️</span><span id="manageBtnText">' + btnText + '</span>';
+        }
+        renderSectionHeader();
+        renderLinks();
+    }
+    
+    renderCategories();
 }
 
 // Render section header
 function renderSectionHeader() {
     const sectionHeader = document.getElementById('sectionHeader');
-    const category = appData.categories.find(cat => cat.id === state.currentCategory);
+    const category = appData.categories.find(function(cat) { return cat.id === state.currentCategory; });
     const links = getFilteredLinks();
+    const linkText = links.length === 1 ? 'ссылка' : 'ссылок';
     
-    sectionHeader.innerHTML = `
-        <span class="section-icon">${category.emoji}</span>
-        <h2 class="section-title">${category.name}</h2>
-        <span class="section-count">${links.length} ссылок</span>
-    `;
+    sectionHeader.innerHTML = '<span class="section-icon">' + category.emoji + '</span><h2 class="section-title">' + category.name + '</h2><span class="section-count">' + links.length + ' ' + linkText + '</span>';
 }
 
 // Get filtered links
 function getFilteredLinks() {
-    let links = appData.links.filter(link => link.category === state.currentCategory);
-    
-    if (state.searchQuery) {
-        const query = state.searchQuery.toLowerCase();
-        links = links.filter(link => 
-            link.title.toLowerCase().includes(query) ||
-            link.description.toLowerCase().includes(query)
-        );
-    }
-    
-    return links;
+    return appData.links.filter(function(link) { return link.category === state.currentCategory; });
 }
 
 // Render links
@@ -279,60 +226,37 @@ function renderLinks() {
     const links = getFilteredLinks();
     
     if (links.length === 0) {
-        linksGrid.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <div class="empty-text">
-                    ${state.searchQuery ? 'Ничего не найдено' : 'В этой категории пока нет ссылок'}
-                </div>
-            </div>
-        `;
+        linksGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">В этой категории пока нет ссылок</div></div>';
         return;
     }
     
-    linksGrid.innerHTML = links.map(link => `
-        <div class="link-card" data-link-id="${link.id}">
-            <div class="link-header">
-                <div class="link-emoji">${link.emoji}</div>
-                <div class="link-info">
-                    <div class="link-title">${link.title}</div>
-                    <div class="link-description">${link.description}</div>
-                    <div class="link-url">${link.url}</div>
-                </div>
-            </div>
-            <div class="link-actions ${state.editMode ? 'visible' : ''}">
-                <button class="link-action-btn link-edit-btn" data-action="edit">✏️ Редактировать</button>
-                <button class="link-action-btn link-delete-btn" data-action="delete">🗑️ Удалить</button>
-            </div>
-        </div>
-    `).join('');
+    linksGrid.innerHTML = links.map(function(link) {
+        const actionsVisible = state.editMode && currentUser.isAdmin ? 'visible' : '';
+        return '<div class="link-card" data-link-id="' + link.id + '"><div class="link-header"><div class="link-emoji">' + link.emoji + '</div><div class="link-info"><div class="link-title">' + link.title + '</div><div class="link-description">' + link.description + '</div><div class="link-url">' + link.url + '</div></div></div><div class="link-actions ' + actionsVisible + '"><button class="link-action-btn link-edit-btn" data-action="edit">✏️ Изменить</button><button class="link-action-btn link-delete-btn" data-action="delete">🗑️ Удалить</button></div></div>';
+    }).join('');
     
-    // Add event listeners
-    linksGrid.querySelectorAll('.link-card').forEach(card => {
+    linksGrid.querySelectorAll('.link-card').forEach(function(card) {
         const linkId = parseInt(card.dataset.linkId);
-        const link = appData.links.find(l => l.id === linkId);
+        const link = appData.links.find(function(l) { return l.id === linkId; });
         
-        // Click to open link
-        card.addEventListener('click', (e) => {
+        card.addEventListener('click', function(e) {
             if (e.target.closest('.link-action-btn')) return;
             if (!state.editMode) {
                 window.open(link.url, '_blank');
             }
         });
         
-        // Edit button
         const editBtn = card.querySelector('[data-action="edit"]');
         if (editBtn) {
-            editBtn.addEventListener('click', (e) => {
+            editBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 openEditModal(linkId);
             });
         }
         
-        // Delete button
         const deleteBtn = card.querySelector('[data-action="delete"]');
         if (deleteBtn) {
-            deleteBtn.addEventListener('click', (e) => {
+            deleteBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 deleteLink(linkId);
             });
@@ -340,16 +264,108 @@ function renderLinks() {
     });
 }
 
+// Render chat messages
+function renderChat() {
+    const chatMessages = document.getElementById('chatMessages');
+    
+    if (appData.messages.length === 0) {
+        chatMessages.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-text">Сообщений пока нет. Напишите первым!</div></div>';
+        return;
+    }
+    
+    chatMessages.innerHTML = appData.messages.map(function(msg) {
+        const date = new Date(msg.timestamp);
+        const timeStr = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+        const avatarContent = msg.avatarUrl ? '<img src="' + msg.avatarUrl + '" alt="' + msg.displayName + '">' : (msg.displayName ? msg.displayName.charAt(0).toUpperCase() : '👤');
+        const deleteBtn = (currentUser.isAdmin || msg.username === currentUser.username) ? '<button class="chat-delete-btn" data-msg-id="' + msg.id + '">Удалить</button>' : '';
+        
+        return '<div class="chat-message"><div class="chat-avatar">' + avatarContent + '</div><div class="chat-content"><div class="chat-header"><span class="chat-username">' + (msg.displayName || msg.username) + '</span><span class="chat-timestamp">' + dateStr + ' ' + timeStr + '</span>' + deleteBtn + '</div><div class="chat-text">' + escapeHtml(msg.message) + '</div></div></div>';
+    }).join('');
+    
+    chatMessages.querySelectorAll('.chat-delete-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const msgId = parseInt(btn.dataset.msgId);
+            deleteMessage(msgId);
+        });
+    });
+    
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Send chat message
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    const newMessage = {
+        id: Date.now(),
+        username: currentUser.username || 'guest',
+        displayName: currentUser.firstName,
+        avatarUrl: currentUser.photoUrl,
+        message: message,
+        timestamp: Date.now(),
+        isAdmin: currentUser.isAdmin
+    };
+    
+    appData.messages.push(newMessage);
+    saveData();
+    input.value = '';
+    renderChat();
+}
+
+// Delete message
+function deleteMessage(msgId) {
+    if (confirm('Удалить это сообщение?')) {
+        const index = appData.messages.findIndex(function(m) { return m.id === msgId; });
+        if (index > -1) {
+            appData.messages.splice(index, 1);
+            saveData();
+            renderChat();
+        }
+    }
+}
+
+// Clear all chat messages
+function clearChat() {
+    if (confirm('Удалить все сообщения в чате? Это действие нельзя отменить.')) {
+        appData.messages = [];
+        saveData();
+        renderChat();
+    }
+}
+
 // Toggle edit mode
 function toggleEditMode() {
-    state.editMode = !state.editMode;
-    const manageBtnText = document.getElementById('manageBtnText');
-    manageBtnText.textContent = state.editMode ? 'Готово' : 'Управление';
-    renderLinks();
+    if (!currentUser.isAdmin) return;
+    
+    const category = appData.categories.find(function(cat) { return cat.id === state.currentCategory; });
+    
+    if (category.type === 'chat') {
+        clearChat();
+    } else {
+        state.editMode = !state.editMode;
+        const manageBtnText = document.getElementById('manageBtnText');
+        if (manageBtnText) {
+            manageBtnText.textContent = state.editMode ? 'Готово' : 'Редактировать';
+        }
+        renderLinks();
+    }
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Open add link modal
 function openAddModal() {
+    if (!currentUser.isAdmin) return;
+    
     state.editingLinkId = null;
     const modal = document.getElementById('linkModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -358,21 +374,21 @@ function openAddModal() {
     modalTitle.textContent = 'Добавить ссылку';
     form.reset();
     
-    // Populate category dropdown
     const categorySelect = document.getElementById('linkCategory');
-    categorySelect.innerHTML = appData.categories.map(cat => 
-        `<option value="${cat.id}" ${cat.id === state.currentCategory ? 'selected' : ''}>
-            ${cat.emoji} ${cat.name}
-        </option>`
-    ).join('');
+    categorySelect.innerHTML = appData.categories.filter(function(cat) { return cat.type === 'links'; }).map(function(cat) {
+        const selected = cat.id === state.currentCategory ? 'selected' : '';
+        return '<option value="' + cat.id + '" ' + selected + '>' + cat.emoji + ' ' + cat.name + '</option>';
+    }).join('');
     
     modal.classList.add('active');
 }
 
 // Open edit link modal
 function openEditModal(linkId) {
+    if (!currentUser.isAdmin) return;
+    
     state.editingLinkId = linkId;
-    const link = appData.links.find(l => l.id === linkId);
+    const link = appData.links.find(function(l) { return l.id === linkId; });
     if (!link) return;
     
     const modal = document.getElementById('linkModal');
@@ -380,19 +396,16 @@ function openEditModal(linkId) {
     
     modalTitle.textContent = 'Редактировать ссылку';
     
-    // Populate form
     document.getElementById('linkTitle').value = link.title;
     document.getElementById('linkUrl').value = link.url;
     document.getElementById('linkEmoji').value = link.emoji;
-    document.getElementById('linkDescription').value = link.description;
+    document.getElementById('linkDescription').value = link.description || '';
     
-    // Populate category dropdown
     const categorySelect = document.getElementById('linkCategory');
-    categorySelect.innerHTML = appData.categories.map(cat => 
-        `<option value="${cat.id}" ${cat.id === link.category ? 'selected' : ''}>
-            ${cat.emoji} ${cat.name}
-        </option>`
-    ).join('');
+    categorySelect.innerHTML = appData.categories.filter(function(cat) { return cat.type === 'links'; }).map(function(cat) {
+        const selected = cat.id === link.category ? 'selected' : '';
+        return '<option value="' + cat.id + '" ' + selected + '>' + cat.emoji + ' ' + cat.name + '</option>';
+    }).join('');
     
     modal.classList.add('active');
 }
@@ -415,8 +428,7 @@ function saveLink(e) {
     const description = document.getElementById('linkDescription').value;
     
     if (state.editingLinkId) {
-        // Edit existing link
-        const link = appData.links.find(l => l.id === state.editingLinkId);
+        const link = appData.links.find(function(l) { return l.id === state.editingLinkId; });
         if (link) {
             link.title = title;
             link.url = url;
@@ -425,103 +437,99 @@ function saveLink(e) {
             link.description = description;
         }
     } else {
-        // Add new link
         const newLink = {
             id: Date.now(),
-            title,
-            url,
-            category,
-            emoji,
-            description
+            title: title,
+            url: url,
+            category: category,
+            emoji: emoji,
+            description: description
         };
         appData.links.push(newLink);
     }
     
+    saveData();
     closeModal();
-    renderApp();
+    renderContent();
 }
 
 // Delete link
 function deleteLink(linkId) {
+    if (!currentUser.isAdmin) return;
+    
     if (confirm('Вы уверены, что хотите удалить эту ссылку?')) {
-        const index = appData.links.findIndex(l => l.id === linkId);
+        const index = appData.links.findIndex(function(l) { return l.id === linkId; });
         if (index > -1) {
             appData.links.splice(index, 1);
-            renderApp();
+            saveData();
+            renderContent();
         }
     }
 }
 
-// Show all categories (menu)
-function showAllCategories() {
-    const categoriesNav = document.getElementById('categoriesNav');
-    categoriesNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// Search functionality
-function showSearch() {
-    const query = prompt('Введите текст для поиска:');
-    if (query !== null) {
-        state.searchQuery = query.trim();
-        renderApp();
-    }
-}
-
-// Render entire app
-function renderApp() {
-    renderCategories();
-    renderSectionHeader();
-    renderLinks();
+// Export data
+function exportData() {
+    if (!currentUser.isAdmin) return;
+    
+    const dataStr = JSON.stringify(appData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'edm_data_' + Date.now() + '.json';
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    alert('Данные экспортированы!\n\nИнтеграция с Google Sheets:\n1. Создайте Google Таблицу\n2. Apps Script -> doPost(e)\n3. Добавьте URL в код');
 }
 
 // Initialize app
 function init() {
     initTelegramUser();
-    renderApp();
+    renderContent();
     
-    // Event listeners
     document.getElementById('addLinkBtn').addEventListener('click', openAddModal);
     document.getElementById('manageBtn').addEventListener('click', toggleEditMode);
+    document.getElementById('exportBtn').addEventListener('click', exportData);
     document.getElementById('modalClose').addEventListener('click', closeModal);
     document.getElementById('cancelBtn').addEventListener('click', closeModal);
     document.getElementById('linkForm').addEventListener('submit', saveLink);
     
-    // Bottom nav
-    document.getElementById('homeBtn').addEventListener('click', () => {
-        state.currentCategory = 'tutorials';
-        state.searchQuery = '';
-        renderApp();
-        
-        // Update active state
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('homeBtn').classList.add('active');
+    document.getElementById('chatSendBtn').addEventListener('click', sendMessage);
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
     });
     
-    document.getElementById('menuBtn').addEventListener('click', () => {
-        showAllCategories();
-        
-        // Update active state
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('menuBtn').classList.add('active');
+    document.getElementById('helpBtn').addEventListener('click', function() {
+        alert('EDM Resources\n\nЭто приложение для управления ресурсами по электроэрозионной обработке.\n\n📚 Просматривайте ссылки на платы и схемы\n💬 Общайтесь в чате\n\nАдминистратор может:\n• Добавлять и редактировать ссылки\n• Управлять чатом\n• Экспортировать данные');
     });
     
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        showSearch();
-        
-        // Update active state
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('searchBtn').classList.add('active');
+    document.getElementById('settingsBtn').addEventListener('click', function() {
+        if (confirm('Сбросить все данные и вернуть начальные настройки?')) {
+            appData = JSON.parse(JSON.stringify(defaultData));
+            saveData();
+            renderContent();
+            alert('Данные сброшены!');
+        }
     });
     
-    // Close modal on outside click
-    document.getElementById('linkModal').addEventListener('click', (e) => {
+    document.getElementById('backBtn').addEventListener('click', function() {
+        if (tg.close) {
+            tg.close();
+        } else {
+            window.history.back();
+        }
+    });
+    
+    document.getElementById('linkModal').addEventListener('click', function(e) {
         if (e.target.id === 'linkModal') {
             closeModal();
         }
     });
 }
 
-// Start the app
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
