@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EDM Resources Hub</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-bg: #0f1419;
+            --secondary-bg: #1a1f2e;
+            --card-bg: #1e2530;
+            --accent-blue: #00d4ff;
+            --accent-green: #1db954;
+            --accent-orange: #ff6b35;
+            --text-primary: #e8e8e8;
+            --text-secondary: #999999;
+            --border-color: rgba(0, 212, 255, 0.2);
+            --hover-glow: rgba(0, 212, 255, 0.3);
+            
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header with User Profile */
+        .header {
+            background: var(--secondary-bg);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 0 8px var(--accent-blue));
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-blue);
+            background: var(--secondary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-username {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: var(--primary-bg);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover, .btn-primary:active {
+            background: #00b8e6;
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover, .btn-secondary:active {
+            background: var(--card-bg);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px var(--hover-glow);
+        }
+
+        /* Categories Navigation */
+        .categories-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--secondary-bg);
+        }
+
+        .categories-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .categories-nav::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+
+        .categories-nav::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        .category-btn {
+            padding: 10px 18px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .category-btn.active {
+            background: var(--accent-blue);
+            color: var(--primary-bg);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .category-btn:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px var(--hover-glow);
+        }
+
+        /* Links Section */
+        .links-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .section-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 0 8px var(--accent-blue));
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        /* Link Cards */
+        .links-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .link-card:hover::before {
+            opacity: 1;
+        }
+
+        .link-card:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .link-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .link-emoji {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .link-info {
+            flex: 1;
+        }
+
+        .link-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .link-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .link-url {
+            font-size: 11px;
+            color: var(--accent-blue);
+            margin-top: 8px;
+            word-break: break-all;
+        }
+
+        .link-actions {
+            display: none;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .link-actions.visible {
+            display: flex;
+        }
+
+        .link-action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .link-edit-btn {
+            background: var(--secondary-bg);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .link-delete-btn {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--accent-orange);
+            border: 1px solid var(--accent-orange);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-orange);
+            transform: rotate(90deg);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 14px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0, 212, 255, 0.1);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+            padding: 8px 12px;
+        }
+
+        .nav-btn.active {
+            color: var(--accent-blue);
+        }
+
+        .nav-btn:hover {
+            color: var(--accent-blue);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hide elements */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Circuit pattern background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 212, 255, 0.03) 49px, rgba(0, 212, 255, 0.03) 50px),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 212, 255, 0.03) 49px, rgba(0, 212, 255, 0.03) 50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container, .header, .bottom-nav {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00b8e6;
+        }
+
+        /* Padding for bottom nav */
+        body {
+            padding-bottom: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>
+            <span class="logo-text">EDM Resources</span>
+        </div>
+        <div class="user-profile" id="userProfile">
+            <div class="user-info">
+                <div class="user-name" id="userName">User</div>
+                <div class="user-username" id="userUsername">@user</div>
+            </div>
+            <div class="user-avatar" id="userAvatar">👤</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">EDM Resources Hub</h1>
+            <p class="welcome-subtitle">Профессиональная база ресурсов по электроэрозии и станкостроению</p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="btn btn-primary" id="addLinkBtn">
+                <span>➕</span>
+                <span>Добавить ссылку</span>
+            </button>
+            <button class="btn btn-secondary" id="manageBtn">
+                <span>⚙️</span>
+                <span id="manageBtnText">Управление</span>
+            </button>
+        </div>
+
+        <!-- Categories Navigation -->
+        <div class="categories-nav" id="categoriesNav"></div>
+
+        <!-- Links Section -->
+        <div class="links-section">
+            <div class="section-header" id="sectionHeader"></div>
+            <div class="links-grid" id="linksGrid"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" id="homeBtn">
+            <span class="nav-icon">🏠</span>
+            <span>Главная</span>
+        </button>
+        <button class="nav-btn" id="menuBtn">
+            <span class="nav-icon">📋</span>
+            <span>Меню</span>
+        </button>
+        <button class="nav-btn" id="searchBtn">
+            <span class="nav-icon">🔍</span>
+            <span>Поиск</span>
+        </button>
+    </nav>
+
+    <!-- Add/Edit Link Modal -->
+    <div class="modal" id="linkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Добавить ссылку</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <form id="linkForm">
+                <div class="form-group">
+                    <label class="form-label" for="linkTitle">Название</label>
+                    <input type="text" id="linkTitle" class="form-input" placeholder="Введите название" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkUrl">URL</label>
+                    <input type="url" id="linkUrl" class="form-input" placeholder="https://example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkCategory">Категория</label>
+                    <select id="linkCategory" class="form-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkEmoji">Emoji (опционально)</label>
+                    <input type="text" id="linkEmoji" class="form-input" placeholder="⚡" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="linkDescription">Описание (опционально)</label>
+                    <textarea id="linkDescription" class="form-textarea" placeholder="Краткое описание ссылки"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn" style="flex: 1;">Отмена</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
